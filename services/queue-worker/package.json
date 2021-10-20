@@ -1,0 +1,12 @@
+{
+  "name": "queue-worker",
+  "version": "1.0.0",
+  "description": "responsible for grabbing from SQS queue",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "serverless deploy --stage $ENVIRONMENT",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

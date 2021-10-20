@@ -1,0 +1,26 @@
+service: listener-ec2
+
+plugins:
+  - serverless-functions-base-path # this allows us to use the src directory structure which makes it easier in a monorepo
+
+custom:
+  functionsBasePath: src # this is where we tell it what dir to use
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${file(../../serverless.common.yml):stage} # stage is shared among all packages so we use the common.yml to set
+
+environment: 
+  SQS_QUEUE: ${self.provider.stage}-${self.service}
+
+resources: 
+  Resources:
+    YourEC2Instance:
+      Type: AWS::EC2::Instance
+      Properties: 
+        ImageId: # here is where we should have a docker image rather than basic ami
+        KeyName: nethec2 # this is the .pem keyname you have, if you dont have it you need to create one first
+        InstanceType: t2.micro
+        # SubnetId: # does this need to be created first? 
+        # SecurityGroupIds: # does this need to be created first? 

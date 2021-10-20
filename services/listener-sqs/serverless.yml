@@ -1,0 +1,35 @@
+service: listener-sqs
+
+plugins:
+  - serverless-functions-base-path # this allows us to use the src directory structure which makes it easier in a monorepo
+
+custom:
+  functionsBasePath: src # this is where we tell it what dir to use
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${file(../../serverless.common.yml):stage} # stage is shared among all packages so we use the common.yml to set
+
+  environment: 
+    SQS_QUEUE: ${self:provider.stage}-${self:service}.fifo
+
+resources:
+  - Resources:
+      SqsQueue: # here were declaring the queue, if it doesn't exist, serverless will create it.
+        Type: 'AWS::SQS::Queue'
+        Properties:
+          QueueName: ${self:provider.environment.SQS_QUEUE}
+          FifoQueue: true
+          FifoThroughputLimit: perMessageGroupId
+          ContentBasedDeduplication: true
+          DeduplicationScope: messageGroup
+          # MaximumMessageSize: # keep this around if you need to limit size
+          DelaySeconds: 3
+
+  - Outputs:
+      SqsQueueArn: # here were exporting the name of the Queue for us to use in the lambda service
+        Value:
+          'Fn::GetAtt': ['SqsQueue', 'Arn']
+        Export: 
+          Name: ${self:provider.stage}:SqsQueueArn
