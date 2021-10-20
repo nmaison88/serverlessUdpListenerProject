@@ -19,7 +19,7 @@ resources:
     YourEC2Instance:
       Type: AWS::EC2::Instance
       Properties: 
-        ImageId: # here is where we should have a docker image rather than basic ami
+        ImageId: ami-02e136e904f3da870 # here is where we should have a docker image rather than basic ami
         KeyName: nethec2 # this is the .pem keyname you have, if you dont have it you need to create one first
         InstanceType: t2.micro
         # SubnetId: # does this need to be created first? 

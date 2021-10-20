@@ -1,0 +1,13 @@
+FROM node:12.16.2-alpine
+
+WORKDIR /usr/src/app
+
+
+# install node modules
+COPY package.json ./
+RUN yarn global add lerna
+COPY . .
+
+RUN yarn install
+
+RUN lerna bootstrap
