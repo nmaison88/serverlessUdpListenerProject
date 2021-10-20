@@ -20,8 +20,30 @@ resources:
     YourEC2Instance:
       Type: AWS::EC2::Instance
       Properties: 
-        ImageId: ami-02e136e904f3da870 # here is where we should have a docker image rather than basic ami
+        ImageId: ami-013a129d325529d4d # this one is an us-west-2 image
         KeyName: ${env:EC2_KEY_NAME} # this is the .pem keyname you have, if you dont have it you need to create one first
         InstanceType: t2.micro
         # SubnetId: # if you have specific ones other than default, set here
         # SecurityGroupIds: # if you have specific ones other than default, set here
+        
+    Ec2IamRoleForSqs:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ec2SqsPermissions-${self:provider.stage}
+        AssumeRolePolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - ec2.amazonaws.com
+              Action: 
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: sqsPolicies-${self:provider.stage}
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - sqs:'*'
+                  Resource:
+                    - { Fn::ImportValue: "${self:provider.stage}:SqsQueueArn" }
