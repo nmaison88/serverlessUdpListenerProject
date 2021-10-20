@@ -10,6 +10,7 @@ provider:
   name: aws
   runtime: nodejs12.x
   stage: ${file(../../serverless.common.yml):stage} # stage is shared among all packages so we use the common.yml to set
+  region: ${file(../../serverless.common.yml):region} # region is shared among all packages so we use the common.yml to set
 
 environment: 
   SQS_QUEUE: ${self:provider.stage}-${self.service}
@@ -20,7 +21,7 @@ resources:
       Type: AWS::EC2::Instance
       Properties: 
         ImageId: ami-02e136e904f3da870 # here is where we should have a docker image rather than basic ami
-        KeyName: nethec2 # this is the .pem keyname you have, if you dont have it you need to create one first
+        KeyName: ${env:EC2_KEY_NAME} # this is the .pem keyname you have, if you dont have it you need to create one first
         InstanceType: t2.micro
-        # SubnetId: # does this need to be created first? 
-        # SecurityGroupIds: # does this need to be created first? 
+        # SubnetId: # if you have specific ones other than default, set here
+        # SecurityGroupIds: # if you have specific ones other than default, set here

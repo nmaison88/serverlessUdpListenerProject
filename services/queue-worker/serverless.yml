@@ -10,6 +10,7 @@ provider:
   name: aws
   runtime: nodejs12.x
   stage: ${file(../../serverless.common.yml):stage} # stage is shared among all packages so we use the common.yml to set
+  region: ${file(../../serverless.common.yml):region} # region is shared among all packages so we use the common.yml to set
 
 # environment: 
 # some key:val here, if you declare here all functions will get these vars, you can set individually in the functions themselves too

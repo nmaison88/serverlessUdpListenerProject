@@ -46,6 +46,7 @@ export the env vars required for docker to run, these are the .env vars
 export AWS_ACCESS_KEY_ID=<key id here>
 export AWS_SECRET_ACCESS_KEY=<secret key Here>
 export ENVIRONMENT=<environment here>
+export EC2_KEY_NAME=<ec2 pem keyname here>
 ```
 ### Build docker images and start instance
 
