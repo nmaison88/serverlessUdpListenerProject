@@ -90,3 +90,21 @@ docker stop <name of container>
 ```
 you can use `docker ps` to find out if a docker instance is running, leaving it running can be a drain on your machines resource and block ports used by other applications.
 
+### Deploying to Aws
+
+if your using docker, you can simply run the script
+```bash
+sh ci_deploy.sh 
+make sure you have the exported env vars, and the script does the work for you, it deploys the services in the right order
+```
+
+you can also deploy from the root, if you have already installed all dependencies locally. 
+```bash
+lerna bootstrap # this installs all dependencies into each service
+lerna run deploy # this will deploy all services, if this is your first time deploy the sqs queue first, as it exports a variable for the worker to grab
+
+lerna run deploy_sqs 
+lerna run deploy_worker
+lerna run deploy_ec2
+
+```
