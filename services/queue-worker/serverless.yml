@@ -21,5 +21,5 @@ functions:
     events:
       - sqs: 
           arn:
-              Fn::ImportValue: "${self.provider.stage}:SqsQueueArn"
+              Fn::ImportValue: "${self:provider.stage}:SqsQueueArn"
     

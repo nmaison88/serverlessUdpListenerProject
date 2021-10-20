@@ -12,7 +12,7 @@ provider:
   stage: ${file(../../serverless.common.yml):stage} # stage is shared among all packages so we use the common.yml to set
 
 environment: 
-  SQS_QUEUE: ${self.provider.stage}-${self.service}
+  SQS_QUEUE: ${self:provider.stage}-${self.service}
 
 resources: 
   Resources:
