@@ -12,7 +12,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       ENVIRONMENT: ${ENVIRONMENT}
-
+      EC2_KEY_NAME: ${EC2_KEY_NAME}
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
