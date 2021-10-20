@@ -7,5 +7,5 @@ docker run --rm \
   -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
   -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
   -e ENVIRONMENT=$ENVIRONMENT \
-  $image /bin/sh -c '/bin/sh -c "lerna run deploy"'
+  $image /bin/sh -c '/bin/sh -c "lerna run deploy_sqs && lerna run deploy_worker && lerna run deploy_ec2"'
 

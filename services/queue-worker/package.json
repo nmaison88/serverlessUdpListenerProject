@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "deploy": "serverless deploy --stage $ENVIRONMENT",
+    "deploy_worker": "serverless deploy --stage $ENVIRONMENT",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
