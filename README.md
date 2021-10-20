@@ -53,7 +53,7 @@ export ENVIRONMENT=<environment here>
 docker-compose up --build
 ```
 
-### find the name of the running docker conrainers
+### find the name of the running docker containers
 
 ```bash
 docker ps
