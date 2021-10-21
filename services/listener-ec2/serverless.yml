@@ -92,7 +92,7 @@ resources:
             Name: udpListener
             MemoryReservation: 300
             PortMappings:
-            - ContainerPort: 8000
+            - ContainerPort: 2000
               Protocol: udp
         ExecutionRoleArn: !Ref Ec2IamRoleForSqs
         NetworkMode: host
