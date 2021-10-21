@@ -12,30 +12,29 @@ provider:
   stage: ${file(../../serverless.common.yml):stage} # stage is shared among all packages so we use the common.yml to set
   region: ${file(../../serverless.common.yml):region} # region is shared among all packages so we use the common.yml to set
 
-environment: 
-  SQS_QUEUE: ${self:provider.stage}-${self.service}
+environment:
+  SQS_QUEUE: ${self:provider.stage}-${self:service}
 
-resources: 
+resources:
   Resources:
-    EcsInstance:
-      Type: AWS::ECS::Service
-      Properties: 
-        DesiredCount: # The number of instantiations of the specified task
-        LaunchType: EC2 # can be one of EC2 | EXTERNAL | FARGATE
-        LoadBalancers:  !Ref loadBalancer
-        # NetworkConfiguration: dont know if i need this
-        Role: !Ref Ec2IamRoleForSqs
-
+    # EcsInstance:
+    #   Type: AWS::ECS::Service
+    #   Properties:
+    #     DesiredCount: # The number of instantiations of the specified task
+    #     LaunchType: EC2 # can be one of EC2 | EXTERNAL | FARGATE
+    #     LoadBalancers:  !Ref loadBalancer
+    #     # NetworkConfiguration: dont know if i need this
+    #     Role: !Ref Ec2IamRoleForSqs
 
     # YourEC2Instance:
     #   Type: AWS::EC2::Instance
-    #   Properties: 
+    #   Properties:
     #     ImageId: ami-0dd273d94ed0540c0 # this one is an us-west-2 image
     #     KeyName: ${env:EC2_KEY_NAME} # this is the .pem keyname you have, if you dont have it you need to create one first
     #     InstanceType: t2.micro
     #     # SubnetId: # if you have specific ones other than default, set here
     #     # SecurityGroupIds: # if you have specific ones other than default, set here
-        
+
     Ec2IamRoleForSqs:
       Type: AWS::IAM::Role
       Properties:
@@ -46,7 +45,7 @@ resources:
               Principal:
                 Service:
                   - ec2.amazonaws.com
-              Action: 
+              Action:
                 - sts:AssumeRole
         Policies:
           - PolicyName: sqsPolicies-${self:provider.stage}
@@ -56,13 +55,45 @@ resources:
                   Action:
                     - sqs:'*'
                   Resource:
-                    - { Fn::ImportValue: "${self:provider.stage}:SqsQueueArn" }
-              Path: /
-              ManagedPolicyArns:
-                - arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
+                    - { Fn::ImportValue: '${self:provider.stage}:SqsQueueArn' }
+                - Effect: Allow
+                  Action:
+                    - ecr:GetAuthorizationToken
+                    - ecr:BatchCheckLayerAvailability
+                    - ecr:GetDownloadUrlForLayer
+                    - ecr:BatchGetImage
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource: '*'
 
-    loadBalancer:
-      Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-      Properties: 
-        Type: network # this is what allows udp, rather than http
+              # Path: /
+              # ManagedPolicyArns:
+              #   - arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
 
+    ECSCluster:
+      Type: AWS::ECS::Cluster
+
+    ECSService:
+      Type: AWS::ECS::Service
+      Properties:
+        Cluster:
+          Ref: 'ECSCluster'
+        DesiredCount: 1
+        TaskDefinition:
+          Ref: 'ECSTaskDefinition'
+
+    ECSTaskDefinition:
+      Type: AWS::ECS::TaskDefinition
+      Properties:
+        RequiresCompatibilities:
+          - "EC2"
+        ContainerDefinitions:
+          - Image: ${env:ECR_IMAGE}
+            Name: udpListener
+            MemoryReservation: 300
+            PortMappings:
+            - ContainerPort: 8000
+              Protocol: udp
+        ExecutionRoleArn: !Ref Ec2IamRoleForSqs
+        NetworkMode: host
+        TaskRoleArn: !Ref Ec2IamRoleForSqs
