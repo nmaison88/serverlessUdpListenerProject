@@ -13,7 +13,7 @@ provider:
   region: ${file(../../serverless.common.yml):region} # region is shared among all packages so we use the common.yml to set
 
   environment: 
-    SQS_QUEUE: ${self:provider.stage}-${self:service}.fifo
+    SQS_QUEUE: ${self:provider.stage}-${self:service}
 
 resources:
   - Resources:
@@ -21,10 +21,10 @@ resources:
         Type: 'AWS::SQS::Queue'
         Properties:
           QueueName: ${self:provider.environment.SQS_QUEUE}
-          FifoQueue: true
-          FifoThroughputLimit: perMessageGroupId
-          ContentBasedDeduplication: true
-          DeduplicationScope: messageGroup
+          # FifoQueue: false
+          # FifoThroughputLimit: perMessageGroupId
+          # ContentBasedDeduplication: true
+          # DeduplicationScope: messageGroup
           # MaximumMessageSize: # keep this around if you need to limit size
           DelaySeconds: 3
 

@@ -24,10 +24,18 @@ resources:
         ImageId: ami-013a129d325529d4d # this one is an us-west-2 image
         KeyName: ${env:EC2_KEY_NAME} # this is the .pem keyname you have, if you dont have it you need to create one first
         InstanceType: t2.micro
+        IamInstanceProfile: !Ref InstanceProfile
         UserData:
           Fn::Base64: "${file(../../ec2Start.sh)}"
         # SubnetId: # if you have specific ones other than default, set here
         # SecurityGroupIds: # if you have specific ones other than default, set here
+
+    InstanceProfile:
+      Type: AWS::IAM::InstanceProfile
+      Properties: 
+        InstanceProfileName: ec2SqsPermissions-${self:provider.stage}
+        Roles: 
+          -  !Ref Ec2IamRoleForSqs
 
     Ec2IamRoleForSqs:
       Type: AWS::IAM::Role
@@ -47,7 +55,7 @@ resources:
               Statement:
                 - Effect: Allow
                   Action:
-                    - sqs:'*'
+                    - sqs:*
                   Resource:
                     - { Fn::ImportValue: '${self:provider.stage}:SqsQueueArn' }
                 - Effect: Allow
